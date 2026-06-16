@@ -8,6 +8,7 @@ ROUTE_PERMISSIONS = {
     "assignments:write": [UserRole.ADMIN, UserRole.TEACHER],
     "attendance:write": [UserRole.ADMIN, UserRole.TEACHER],
     "grades:write": [UserRole.ADMIN, UserRole.TEACHER],
+    "grades:publish": [UserRole.ADMIN, UserRole.TEACHER],
     "audit:read": [UserRole.ADMIN],
 }
 

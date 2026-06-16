@@ -10,5 +10,6 @@ export const ButtonPermissions = {
   createCourse: [UserRole.ADMIN, UserRole.TEACHER],
   changeAttendance: [UserRole.ADMIN, UserRole.TEACHER],
   modifyGrade: [UserRole.ADMIN, UserRole.TEACHER],
+  publishGrade: [UserRole.ADMIN, UserRole.TEACHER],
   enrollCourse: [UserRole.STUDENT],
 } as const;

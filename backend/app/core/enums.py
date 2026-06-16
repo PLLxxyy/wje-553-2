@@ -25,6 +25,10 @@ class CourseStatus(str, Enum):
     COMPLETED = "COMPLETED"
     ARCHIVED = "ARCHIVED"
 
+class GradeStatus(str, Enum):
+    DRAFT = "DRAFT"
+    PUBLISHED = "PUBLISHED"
+
 class UserRole(str, Enum):
     ADMIN = "ADMIN"
     TEACHER = "TEACHER"
