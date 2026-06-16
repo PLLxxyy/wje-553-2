@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from fastapi import HTTPException
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.core.enums import GradeStatus
 from app.models.assignment import Assignment
 from app.models.submission import Submission
@@ -11,7 +11,7 @@ from .audit_service import audit_service
 
 class GradeService:
     def grade_submission(self, db: Session, submission_id: str, score: Decimal, comment: str | None = None, user_id: str | None = None) -> Submission:
-        submission = db.query(Submission).filter(Submission.id == submission_id).first()
+        submission = db.query(Submission).options(joinedload(Submission.student), joinedload(Submission.assignment)).filter(Submission.id == submission_id).first()
         if not submission:
             raise HTTPException(status_code=404, detail="Submission not found")
         before = {"score": float(submission.score) if submission.score else None, "grade_status": submission.grade_status.value}
@@ -20,6 +20,7 @@ class GradeService:
         submission.graded_at = datetime.now()
         submission.grade_status = GradeStatus.DRAFT
         db.commit(); db.refresh(submission)
+        db.refresh(submission, ["student", "assignment"])
         audit_service.log(db, "grade.create", "Submission", str(submission.id), user_id=user_id, before_data=before, after_data={"score": float(score), "grade_status": GradeStatus.DRAFT.value})
         return submission
 
@@ -39,7 +40,7 @@ class GradeService:
         return len(submissions)
 
     def list_graded(self, db: Session, assignment_id: str | None = None, grade_status: GradeStatus | None = None, role: str | None = None):
-        query = db.query(Submission).filter(Submission.score.isnot(None))
+        query = db.query(Submission).options(joinedload(Submission.student), joinedload(Submission.assignment)).filter(Submission.score.isnot(None))
         if assignment_id:
             query = query.filter(Submission.assignment_id == assignment_id)
         if grade_status:
@@ -68,7 +69,8 @@ class GradeService:
 
     def student_comprehensive(self, db: Session, course_id: str, student_id: str) -> float:
         submissions = (
-            db.query(Submission).join(Submission.assignment)
+            db.query(Submission).options(joinedload(Submission.assignment))
+            .join(Submission.assignment)
             .filter(Assignment.course_id == course_id, Submission.student_id == student_id, Submission.grade_status == GradeStatus.PUBLISHED)
             .all()
         )

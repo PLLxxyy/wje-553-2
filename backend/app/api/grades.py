@@ -22,7 +22,7 @@ def serialize_submission(item):
         "id": str(item.id),
         "assignment_id": str(item.assignment_id),
         "student_id": str(item.student_id),
-        "student_name": item.student.full_name if item.student else None,
+        "student_name": item.student.name if item.student else None,
         "score": float(item.score) if item.score else None,
         "comment": item.comment,
         "grade_status": item.grade_status.value,

@@ -4,7 +4,7 @@ from starlette.responses import JSONResponse
 from app.core.enums import UserRole
 
 ADMIN_ONLY_PREFIXES = ("/api/audit",)
-TEACHER_WRITE_PREFIXES = ("/api/assignments", "/api/attendance")
+TEACHER_WRITE_PREFIXES = ("/api/assignments", "/api/attendance", "/api/grades")
 
 class AuthorizationMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
